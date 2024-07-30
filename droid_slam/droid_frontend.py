@@ -105,6 +105,7 @@ class DroidFrontend:
 
         self.graph.rm_factors(self.graph.ii < self.warmup-4, store=True)
 
+    # 主要的函数
     def __call__(self):
         """ main update """
 
