@@ -54,7 +54,7 @@ class DroidFrontend:
         poses = SE3(self.video.poses)
         d = self.video.distance([self.t1-3], [self.t1-2], beta=self.beta, bidirectional=True)
 
-        if d.item() < self.keyframe_thresh:
+        if d.item() < self.keyframe_thresh:#如果两帧之间的位移小于阈值，就删掉这帧
             self.graph.rm_keyframe(self.t1 - 2)
             
             with self.video.get_lock():
