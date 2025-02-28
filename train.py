@@ -8,7 +8,7 @@ from collections import OrderedDict
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from data_readers.factory import dataset_factory
+from .droid_slam.data_readers.factory import dataset_factory
 
 from lietorch import SO3, SE3, Sim3
 from geom import losses
