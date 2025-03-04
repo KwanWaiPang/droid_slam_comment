@@ -67,7 +67,7 @@ class Droid:
             # 对于droid而言，它只会保留光流大于16px的帧，然后将这些帧送入前端处理
 
             # local bundle adjustment
-            self.frontend()
+            self.frontend()#前端处理
 
             # global bundle adjustment
             # self.backend()

@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import lietorch
-import droid_backends
+import droid_backends #这部分就已经是CUDA代码了~
 
 from torch.multiprocessing import Process, Queue, Lock, Value
 from collections import OrderedDict

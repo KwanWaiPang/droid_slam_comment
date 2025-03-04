@@ -6,10 +6,11 @@ import matplotlib.pyplot as plt
 from lietorch import SE3
 from modules.corr import CorrBlock, AltCorrBlock
 import geom.projective_ops as pops
+from depth_video import DepthVideo
 
 
 class FactorGraph:
-    def __init__(self, video, update_op, device="cuda:0", corr_impl="volume", max_factors=-1, upsample=False):
+    def __init__(self, video:DepthVideo, update_op, device="cuda:0", corr_impl="volume", max_factors=-1, upsample=False):
         self.video = video
         self.update_op = update_op
         self.device = device
@@ -238,7 +239,7 @@ class FactorGraph:
 
             # dense bundle adjustment
             self.video.ba(target, weight, damping, ii, jj, t0, t1, 
-                itrs=itrs, lm=1e-4, ep=0.1, motion_only=motion_only)
+                itrs=itrs, lm=1e-4, ep=0.1, motion_only=motion_only)#BA优化
         
             if self.upsample:
                 self.video.upsample(torch.unique(self.ii), upmask)

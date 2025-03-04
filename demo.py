@@ -12,7 +12,7 @@ import time
 import argparse
 
 from torch.multiprocessing import Process
-from droid import Droid
+from droid_slam.droid import Droid
 
 import torch.nn.functional as F
 
@@ -115,18 +115,18 @@ if __name__ == '__main__':
         args.upsample = True
 
     tstamps = []
-    for (t, image, intrinsics) in tqdm(image_stream(args.imagedir, args.calib, args.stride)):
+    for (t, image, intrinsics) in tqdm(image_stream(args.imagedir, args.calib, args.stride)):#读入图像数据
         if t < args.t0:
             continue
 
         if not args.disable_vis:
-            show_image(image[0])
+            show_image(image[0])#可视化图片
 
         if droid is None:
             args.image_size = [image.shape[2], image.shape[3]]
             droid = Droid(args)
         
-        droid.track(t, image, intrinsics=intrinsics)
+        droid.track(t, image, intrinsics=intrinsics)#运行droid tracking
 
     if args.reconstruction_path is not None:
         save_reconstruction(droid, args.reconstruction_path)

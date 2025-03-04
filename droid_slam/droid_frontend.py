@@ -48,7 +48,7 @@ class DroidFrontend:
            self.video.disps_sens[self.t1-1], self.video.disps[self.t1-1])
 
         for itr in range(self.iters1):
-            self.graph.update(None, None, use_inactive=True)
+            self.graph.update(None, None, use_inactive=True)#更新图，里面同时运行BA相关的操作~
 
         # set initial pose for next frame
         poses = SE3(self.video.poses)
@@ -115,6 +115,6 @@ class DroidFrontend:
             
         # do update
         elif self.is_initialized and self.t1 < self.video.counter.value:
-            self.__update()
+            self.__update()#初始化完成后，每次更新一帧
 
         
