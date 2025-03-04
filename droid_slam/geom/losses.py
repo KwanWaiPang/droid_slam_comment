@@ -32,21 +32,21 @@ def geodesic_loss(Ps, Gs, graph, gamma=0.9, do_scale=True):
 
     # relative pose
     ii, jj, kk = graph_to_edge_list(graph)
-    dP = Ps[:,jj] * Ps[:,ii].inv()
+    dP = Ps[:,jj] * Ps[:,ii].inv()#这里的Ps是真实位姿，通过真实位姿计算相对位姿
 
     n = len(Gs)
     geodesic_loss = 0.0
 
     for i in range(n):
         w = gamma ** (n - i - 1)
-        dG = Gs[i][:,jj] * Gs[i][:,ii].inv()
+        dG = Gs[i][:,jj] * Gs[i][:,ii].inv()#这里的Gs是通过网络预测的位姿，通过预测位姿计算相对位姿
 
         if do_scale:
             s = fit_scale(dP, dG)
             dG = dG.scale(s[:,None])
         
         # pose error
-        d = (dG * dP.inv()).log()
+        d = (dG * dP.inv()).log()#计算两个位姿之间的误差
 
         if isinstance(dG, SE3):
             tau, phi = d.split([3,3], dim=-1)
@@ -65,10 +65,10 @@ def geodesic_loss(Ps, Gs, graph, gamma=0.9, do_scale=True):
         r_err, t_err, s_err = pose_metrics(dE)
 
     metrics = {
-        'rot_error': r_err.mean().item(),
-        'tr_error': t_err.mean().item(),
-        'bad_rot': (r_err < .1).float().mean().item(),
-        'bad_tr': (t_err < .01).float().mean().item(),
+        'rot_error': r_err.mean().item(),#旋转误差
+        'tr_error': t_err.mean().item(),#平移误差
+        'bad_rot': (r_err < .1).float().mean().item(),#旋转误差小于0.1的比例
+        'bad_tr': (t_err < .01).float().mean().item(),#平移误差小于0.01的比例
     }
 
     return geodesic_loss, metrics

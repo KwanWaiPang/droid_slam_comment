@@ -37,9 +37,9 @@ def BA(target, weight, eta, poses, disps, intrinsics, ii, jj, fixedp=1, rig=1):
 
     ### 1: commpute jacobians and residuals ###
     coords, valid, (Ji, Jj, Jz) = pops.projective_transform(
-        poses, disps, intrinsics, ii, jj, jacobian=True)
+        poses, disps, intrinsics, ii, jj, jacobian=True)#这是重投影的
 
-    r = (target - coords).view(B, N, -1, 1)
+    r = (target - coords).view(B, N, -1, 1)#传入的target = coords1 + delta，其中delta是通过网络预测的“光流”
     w = .001 * (valid * weight).view(B, N, -1, 1)
 
     ### 2: construct linear system ###

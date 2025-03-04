@@ -11,9 +11,9 @@ from torch.utils.data import DataLoader
 from .droid_slam.data_readers.factory import dataset_factory
 
 from lietorch import SO3, SE3, Sim3
-from geom import losses
-from geom.losses import geodesic_loss, residual_loss, flow_loss
-from geom.graph_utils import build_frame_graph
+from droid_slam.geom import losses
+from droid_slam.geom.losses import geodesic_loss, residual_loss, flow_loss
+from droid_slam.geom.graph_utils import build_frame_graph
 
 # network
 from droid_net import DroidNet
@@ -90,7 +90,7 @@ def train(gpu, args):
             
             else:
                 graph = OrderedDict()
-                for i in range(N):
+                for i in range(N):#args.n_frames是帧的数目
                     graph[i] = [j for j in range(N) if i!=j and abs(i-j) <= 2]
             
             # fix first to camera poses
@@ -107,7 +107,7 @@ def train(gpu, args):
                 poses_est, disps_est, residuals = model(Gs, images, disp0, intrinsics0, 
                     graph, num_steps=args.iters, fixedp=2)
 
-                geo_loss, geo_metrics = losses.geodesic_loss(Ps, poses_est, graph, do_scale=False)
+                geo_loss, geo_metrics = losses.geodesic_loss(Ps, poses_est, graph, do_scale=False)#通过位姿估计的位姿和真实位姿计算geodesic loss
                 res_loss, res_metrics = losses.residual_loss(residuals)
                 flo_loss, flo_metrics = losses.flow_loss(Ps, disps, poses_est, disps_est, intrinsics, graph)
 

@@ -185,7 +185,7 @@ class DroidNet(nn.Module):
         ht, wd = images.shape[-2:]
         coords0 = pops.coords_grid(ht//8, wd//8, device=images.device)
         
-        coords1, _ = pops.projective_transform(Gs, disps, intrinsics, ii, jj)
+        coords1, _ = pops.projective_transform(Gs, disps, intrinsics, ii, jj)#map points from ii->jj 
         target = coords1.clone()
 
         Gs_list, disp_list, residual_list = [], [], []
@@ -204,19 +204,19 @@ class DroidNet(nn.Module):
             motion = motion.permute(0,1,4,2,3).clamp(-64.0, 64.0)
 
             net, delta, weight, eta, upmask = \
-                self.update(net, inp, corr, motion, ii, jj)
+                self.update(net, inp, corr, motion, ii, jj)#准确来说delta是ii到jj的光流
 
             target = coords1 + delta
 
             for i in range(2):
                 Gs, disps = BA(target, weight, eta, Gs, disps, intrinsics, ii, jj, fixedp=2)
 
-            coords1, valid_mask = pops.projective_transform(Gs, disps, intrinsics, ii, jj)
-            residual = (target - coords1)
+            coords1, valid_mask = pops.projective_transform(Gs, disps, intrinsics, ii, jj)#这里是通过更新后位姿坐标投影
+            residual = (target - coords1)#可以理解为重投影与光流的差
 
-            Gs_list.append(Gs)
-            disp_list.append(upsample_disp(disps, upmask))
-            residual_list.append(valid_mask * residual)
+            Gs_list.append(Gs)#这里是更新后的位姿
+            disp_list.append(upsample_disp(disps, upmask))#这里是更新后的深度图/视差图
+            residual_list.append(valid_mask * residual)#这里是重投影与光流的差
 
 
         return Gs_list, disp_list, residual_list
