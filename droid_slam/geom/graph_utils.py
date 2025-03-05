@@ -40,7 +40,7 @@ def build_frame_graph(poses, disps, intrinsics, num=16, thresh=24.0, r=2):
     poses = poses[0].cpu().numpy()
     disps = disps[0][:,3::8,3::8].cpu().numpy()
     intrinsics = intrinsics[0].cpu().numpy() / 8.0
-    d = compute_distance_matrix_flow(poses, disps, intrinsics)
+    d = compute_distance_matrix_flow(poses, disps, intrinsics)#计算每对图像之间的光流幅度
 
     count = 0
     graph = OrderedDict()
@@ -48,7 +48,7 @@ def build_frame_graph(poses, disps, intrinsics, num=16, thresh=24.0, r=2):
     for i in range(N):
         graph[i] = []
         d[i,i] = np.inf
-        for j in range(i-r, i+r+1):
+        for j in range(i-r, i+r+1):#强制连接前后各r帧（默认r=2），确保基础时序关联。
             if 0 <= j < N and i != j:
                 graph[i].append(j)
                 d[i,j] = np.inf
@@ -58,7 +58,7 @@ def build_frame_graph(poses, disps, intrinsics, num=16, thresh=24.0, r=2):
         ix = np.argmin(d)
         i, j = ix // N, ix % N
 
-        if d[i,j] < thresh:
+        if d[i,j] < thresh:#如果光流幅度小于阈值（默认24.0），则连接这两帧。
             graph[i].append(j)
             d[i,j] = np.inf
             count += 1

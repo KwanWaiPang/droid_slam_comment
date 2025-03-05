@@ -84,18 +84,18 @@ def train(gpu, args):
             Ps = SE3(poses).inv()
             Gs = SE3.IdentityLike(Ps)
 
-            # randomize frame graph
-            if np.random.rand() < 0.5:
+            # randomize frame graph（50%），随机构建帧之间的图结构（frame graph），用于确定哪些帧之间存在关联（边）
+            if np.random.rand() < 0.5:#共视性动态构建模式
                 graph = build_frame_graph(poses, disps, intrinsics, num=args.edges)
             
-            else:
+            else:#简单邻近连接模式
                 graph = OrderedDict()
                 for i in range(N):#args.n_frames是帧的数目
-                    graph[i] = [j for j in range(N) if i!=j and abs(i-j) <= 2]
+                    graph[i] = [j for j in range(N) if i!=j and abs(i-j) <= 2] #每帧（i）连接前后最多2帧（i-2, i-1, i+1, i+2），固定模式，保证局部时序连续性，适合运动连贯的场景。
             
             # fix first to camera poses
             Gs.data[:,0] = Ps.data[:,0].clone()
-            Gs.data[:,1:] = Ps.data[:,[1]].clone()
+            Gs.data[:,1:] = Ps.data[:,[1]].clone()#而之后的初始位姿都是第一帧的位姿（准确来说就是第二帧之后的）
             disp0 = torch.ones_like(disps[:,:,3::8,3::8])
 
             # perform random restarts
