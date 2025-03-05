@@ -53,7 +53,7 @@ def image_stream(imagedir, calib, stride):
         intrinsics[0::2] *= (w1 / w0)
         intrinsics[1::2] *= (h1 / h0)
 
-        yield t, image[None], intrinsics
+        yield t, image[None], intrinsics;#注意此处给image已经额外增加了一个维度了~~~
 
 
 def save_reconstruction(droid, reconstruction_path):
